@@ -2,6 +2,7 @@
 
 import LetterDatabase from './database.js';
 import VisualRenderer from './renderer.js';
+import LetterSelector from './letterSelector.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Grab your form controls
@@ -13,11 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const exportBtn         = document.getElementById('export-btn');
   const shareBtn          = document.getElementById('share-btn');
 
-  // Instantiate your database and renderer
+  // Instantiate your classes
   const database = new LetterDatabase();
+  const selector = new LetterSelector(database);
   const renderer = new VisualRenderer('p5-canvas-container');
 
-  // When “Generate Typography” is clicked…
+  // When "Generate Typography" is clicked…
   generateBtn.addEventListener('click', async () => {
     const rawText    = userTextInput.value || '';
     let   text       = rawText;
@@ -30,31 +32,24 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (caseOption === 'lower') text = rawText.toLowerCase();
 
     try {
-      // Build an array of letter‐objects
-      const letterArray = [];
-      for (const char of text) {
-        if (char.trim() === '') {
-          // Spaces
-          letterArray.push({ type: 'space', value: char });
-        } else {
-          // Try loading up to 5 variants; pick the first one
-          const variants = await database.getLetterVariants(char, style, location);
-          const url      = variants[0];
-          let   img      = null;
-          if (url) {
-            img = await database.loadImage(url);
-          }
-          letterArray.push({
-            type:  'letter',
-            value: char,
-            image: img
-          });
+      // Use the LetterSelector to handle all letter selection logic
+      const letterArray = await selector.selectLettersForText(text, style, location);
+      
+      // Transform the data structure to match what the renderer expects
+      const rendererData = letterArray.map(letter => {
+        if (letter.type === 'letter' && letter.path) {
+          return {
+            type: 'letter',
+            value: letter.value,
+            url: letter.path
+          };
         }
-      }
+        return letter;
+      });
 
       // Hand off to your p5 renderer
-      renderer.renderLetters(letterArray);
-
+      renderer.renderLetters(rendererData);
+      
     } catch (err) {
       console.error('Error generating typography:', err);
     }
@@ -65,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderer.exportAsImage();
   });
 
-  // Simple “share” that opens the PNG in a new window/tab
+  // Simple "share" that opens the PNG in a new window/tab
   shareBtn.addEventListener('click', () => {
     if (!renderer.canvas) return;
     const dataURL = renderer.canvas.elt.toDataURL('image/png');
