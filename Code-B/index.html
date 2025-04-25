@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StreetType</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>StreetType</h1>
+      <p>Typography from the streets</p>
+    </header>
+    
+    <form id="controls-form" class="control-panel">
+      <!-- Text input -->
+      <div class="input-section">
+        <label for="user-text">Enter your text:</label>
+        <textarea id="user-text" placeholder="Type something…"></textarea>
+      </div>
+      
+      <!-- Style & location settings -->
+      <div class="settings-section">
+        <div class="setting">
+          <label for="font-style">Font Style:</label>
+          <select id="font-style">
+            <option value="sans">Sans</option>
+            <option value="serif">Serif</option>
+            <option value="mono">Monospace</option>
+            <option value="script">Script</option>
+          </select>
+        </div>
+        
+        <div class="setting">
+          <label for="location">Location:</label>
+          <select id="location">
+            <option value="NYC">New York City</option>
+          </select>
+        </div>
+        
+        <div class="setting">
+          <label for="case-option">Letter Case:</label>
+          <select id="case-option">
+            <option value="mixed">Mixed Case (As Typed)</option>
+            <option value="upper">All Uppercase</option>
+            <option value="lower">All Lowercase</option>
+          </select>
+        </div>
+      </div>
+      
+      <button id="generate-btn" type="button">Generate Typography</button>
+    </form>
+    
+    <!-- Output display -->
+    <div class="output-section">
+      <div id="output-container"></div>
+      <div id="p5-canvas-container"></div>
+      
+      <div class="output-controls">
+        <button id="export-btn">Export as Image</button>
+        <button id="share-btn">Share</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Load p5 globally first -->
+  <script src="https://cdn.jsdelivr.net/npm/p5/lib/p5.min.js"></script>
+  <!-- Then load your module-based app code -->
+  <script type="module" src="scripts/app.js"></script>
+</body>
+</html>
+
+
